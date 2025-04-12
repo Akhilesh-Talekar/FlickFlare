@@ -9,24 +9,10 @@ export const TMDB_CONFIG = {
 
 import axios from "axios";
 
-// const options = {
-//   method: 'GET',
-//   url: 'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc',
-//   headers: {
-//     accept: 'application/json',
-//     Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlM2Y0ODE0ZmEzNDk3M2YwNGI0MmUzYmNiNjNmMzVlZSIsIm5iZiI6MTc0NDA0MTk3MS4wOTksInN1YiI6IjY3ZjNmN2YzN2I0M2JkY2UyMGFkNDA2YSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.qVNx8AQRnNkGThJ6htFfryuaEVBEwWcCvWScFQzz88w'
-//   }
-// };
-
-// axios
-//   .request(options)
-//   .then(res => console.log(res.data))
-//   .catch(err => console.error(err));
-
-export const fetchMovies = async ({ query }: { query?: string }) => {
+export const fetchMovies = async ({ query }: { query: string }) => {
   const endPoint = query
-    ? `${TMDB_CONFIG.BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
-    : `${TMDB_CONFIG.BASE_URL}/discover/movie?include_adult=true&include_video=false&language=en-US&page=1&sort_by=popularity.desc`;
+    ? `${TMDB_CONFIG.BASE_URL}/search/movie?query=${encodeURIComponent(query)}&include_adult=true`
+    : `${TMDB_CONFIG.BASE_URL}/discover/movie?include_adult=true&include_video=false&language=en-US&page=1&region=IN&sort_by=popularity.desc&with_origin_country=IN&with_original_language=hi`;
   const response = await axios.get(endPoint, {
     headers: TMDB_CONFIG.headers,
   });
@@ -39,3 +25,59 @@ export const fetchMovies = async ({ query }: { query?: string }) => {
 
   return data.results;
 };
+
+export const fetchSeries = async() => {
+  const endpoint = `${TMDB_CONFIG.BASE_URL}/discover/tv?include_adult=true&include_null_first_air_dates=false&language=en-US&page=1&sort_by=vote_count.desc&with_origin_country=IN&with_original_language=hi`
+
+  const response = await axios.get(endpoint, {
+    headers: TMDB_CONFIG.headers,
+  })
+
+  if(response.status !== 200) {
+    throw new Error(`Failed to fetch series: ${response.statusText}`);
+  }
+
+  const data = response.data;
+  return data.results;
+}
+
+export const fetchMovieDetails = async (id: string) => {
+  try{
+    const endpoint = `${TMDB_CONFIG.BASE_URL}/movie/${id}?api_key=${TMDB_CONFIG.API_KEY}`;
+    const response = await axios.get(endpoint, {
+      headers: TMDB_CONFIG.headers,
+    })
+
+    if(response.status !== 200) {
+      throw new Error(`Failed to fetch movie details: ${response.statusText}`);
+    }
+
+    const data = response.data;
+    return data;
+  }
+  catch (error) {
+    console.error("Error fetching movie details:", error);
+    throw error;
+  }
+};
+
+export const fetchSeriesDetails = async (id: string) => {
+  try{
+    const endpoint = `${TMDB_CONFIG.BASE_URL}/tv/${id}?api_key=${TMDB_CONFIG.API_KEY}`;
+    const response = await axios.get(endpoint, {
+      headers: TMDB_CONFIG.headers,
+    })
+
+    if(response.status !== 200) {
+      throw new Error(`Failed to fetch movie details: ${response.statusText}`);
+    }
+
+    const data = response.data;
+    return data;
+  }
+  catch (error) {
+    console.error("Error fetching movie details:", error);
+    throw error;
+  }
+};
+

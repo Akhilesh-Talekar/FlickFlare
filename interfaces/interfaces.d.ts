@@ -1,7 +1,7 @@
 interface Movie {
   id: number;
   title: string;
-  adult: boolean;
+  adult?: boolean;
   backdrop_path: string;
   genre_ids: number[];
   original_language: string;
@@ -9,7 +9,7 @@ interface Movie {
   overview: string;
   popularity: number;
   poster_path: string;
-  release_date: string;
+  release_date?: string;
   video: boolean;
   vote_average: number;
   vote_count: number;
@@ -21,6 +21,7 @@ interface TrendingMovie {
   title: string;
   count: number;
   poster_url: string;
+  $id: string;
 }
 
 interface MovieDetails {

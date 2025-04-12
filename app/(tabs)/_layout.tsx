@@ -1,8 +1,9 @@
 import { Image, ImageBackground, StyleSheet, Text, View } from "react-native";
-import React from "react";
-import { Tabs } from "expo-router";
+import React, { useEffect } from "react";
+import { router, Tabs } from "expo-router";
 import { images } from "@/constants/images";
 import { icons } from "@/constants/icons";
+import { getAccout } from "@/services/appwrite";
 
 const TabIcon = ({
   focused,
@@ -38,6 +39,17 @@ const TabIcon = ({
 };
 
 const _layout = () => {
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await getAccout();
+      if(!result || !result.success) {
+        router.replace("/signin")
+      }
+    }
+    fetchData();
+  },[])
+
   return (
     <Tabs
       screenOptions={{
