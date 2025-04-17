@@ -14,12 +14,14 @@ import { useRouter } from "expo-router";
 import useFetch from "@/services/useFetch";
 import { fetchMovies, fetchSeries } from "@/services/api";
 import MovieCard from "@/components/MovieCard";
-import { getTrendingMovies } from "@/services/appwrite";
+import { getAccout, getTrendingMovies} from "@/services/appwrite";
 import TrendingCard from "@/components/TrendingCard";
 import SeriesCard from "@/components/SeriesCard";
+import { useEffect, useState } from "react";
 
 export default function Index() {
   const router = useRouter();
+  const [user, setUser] = useState<any>(null);
 
   const {
     data: trendingMovies,
@@ -39,6 +41,18 @@ export default function Index() {
     error: moviesError,
   } = useFetch(() => fetchMovies({ query: "" }));
 
+  useEffect(() => {
+    const getUserData = async () => {
+      const user = await getAccout();
+      if (!user.success) {
+        return;
+      }
+      setUser(user.user);
+    };
+
+    getUserData();
+  },[])
+
   return (
     <View className="flex-1 bg-primary">
       <Image source={images.bg} className="absolute w-full z-0" />
@@ -48,6 +62,7 @@ export default function Index() {
         contentContainerStyle={{ minHeight: 100, paddingBottom: 10 }}
       >
         <Image source={icons.logo} className="w-12 h-10 mt-20 mb-5 mx-auto" />
+        <Text className="text-4xl text-accent text-center font-bold">Hello {user?.firstName}</Text>
 
         {(moviesLoading || trendingMoviesLoading || seriesLoading) ? (
           <ActivityIndicator

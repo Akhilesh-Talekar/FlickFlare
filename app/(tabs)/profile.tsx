@@ -13,7 +13,7 @@ const Profile = () => {
       if (!user) {
         return;
       } else if (user.success) {
-        setUserData(user.result);
+        setUserData(user.user);
       }
     };
     fetchUserData();
@@ -40,7 +40,7 @@ const Profile = () => {
               className="w-28 h-28 rounded-full"
             />
           </View>
-          <Text className="text-white text-xl font-bold">{userData?.name}</Text>
+          <Text className="text-white text-xl font-bold">{userData?.firstName} {userData?.lastName}</Text>
           <Text className="text-gray-400">{userData?.email}</Text>
         </View>
       </View>

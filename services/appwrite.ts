@@ -1,9 +1,13 @@
 import { Client, Databases, Account, Query, ID } from "react-native-appwrite";
 import * as SecureStore from "expo-secure-store";
+import { fetchMovieDetails } from "./api";
+import { set } from "zod";
 
 const DATABASE_ID = process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!;
 const APPWRITE_PROJECT_ID = process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!;
-const APPWRITE_COLLECTION_ID = process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID!;
+const APPWRITE_METRICS_ID = process.env.EXPO_PUBLIC_APPWRITE_METRICS_ID!;
+const APPWRITE_USER_ID = process.env.EXPO_PUBLIC_APPWRITE_USER_ID!;
+const APPWRITE_WATCHLIST_ID = process.env.EXPO_PUBLIC_APPWRITE_WATCHLIST_ID!;
 
 const client = new Client()
   .setEndpoint("https://cloud.appwrite.io/v1") // Your API Endpoint
@@ -16,7 +20,7 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
   try {
     const result = await database.listDocuments(
       DATABASE_ID,
-      APPWRITE_COLLECTION_ID,
+      APPWRITE_METRICS_ID,
       [Query.equal("searchTerm", query.toLowerCase())]
     );
 
@@ -24,7 +28,7 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
       const existingMovie = result.documents[0];
       await database.updateDocument(
         DATABASE_ID,
-        APPWRITE_COLLECTION_ID,
+        APPWRITE_METRICS_ID,
         existingMovie.$id,
         {
           count: existingMovie.count + 1,
@@ -33,7 +37,7 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
     } else {
       await database.createDocument(
         DATABASE_ID,
-        APPWRITE_COLLECTION_ID,
+        APPWRITE_METRICS_ID,
         ID.unique(),
         {
           searchTerm: query.toLowerCase(),
@@ -53,7 +57,7 @@ export const getTrendingMovies = async () => {
   try {
     const result = await database.listDocuments(
       DATABASE_ID,
-      APPWRITE_COLLECTION_ID,
+      APPWRITE_METRICS_ID,
       [Query.limit(5), Query.orderDesc("count")]
     );
 
@@ -81,10 +85,16 @@ export const Signup = async ({
       password,
       `${firstName} ${lastName}`
     );
-    console.log("User signed up successfully", result);
     const session = await account.createEmailPasswordSession(email, password);
+    const createUser = await database.createDocument(DATABASE_ID, APPWRITE_USER_ID, result.$id, {
+      sessionId: result.$id,
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+    })
     return { success: true, message: "Signup Successful" };
   } catch (err: any) {
+    console.log(err);
     return { success: false, message: err.message };
   }
 };
@@ -98,9 +108,9 @@ export const Signin = async ({
 }) => {
   try {
     const session = await account.createEmailPasswordSession(email, password);
-    console.log("User signed in successfully", session);
     return { success: true, message: "Signin Successful" };
   } catch (err: any) {
+    console.log(err);
     return { success: false, message: err.message };
   }
 };
@@ -117,8 +127,74 @@ export const Signout = async () => {
 export const getAccout = async () => {
   try {
     const result = await account.get();
-    return { success: true, result };
+    const user = await database.listDocuments(
+      DATABASE_ID,
+      APPWRITE_USER_ID,
+      [Query.equal("sessionId", result.$id)]
+    );
+    return { success: true, user: user.documents[0] };
   } catch (err) {
     return { success: false, message: "Error fetching account" };
   }
+}
+
+export const addToWatchlist = async ({id, user}:{id:string, user:string}) => {
+  try{
+    const movie = await fetchMovieDetails(id);
+    const result = await database.createDocument(
+      DATABASE_ID,
+      APPWRITE_WATCHLIST_ID,
+      ID.unique(),
+      {
+        poster_path: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
+        title: movie.title,
+        vote_average: Math.round(movie.vote_average),
+        user: user,
+        movie_id: id,
+        overview: movie.overview,
+      }
+    );
+  }
+  catch (err) {
+    console.log(err);
+  }
+}
+
+export const removeFromWatchlist = async (id: string) => {
+  try {
+    const res = await database.listDocuments(
+      DATABASE_ID,
+      APPWRITE_WATCHLIST_ID,
+      [Query.equal("movie_id", id)]
+    );
+
+    const result = await database.deleteDocument(
+      DATABASE_ID,
+      APPWRITE_WATCHLIST_ID,
+      res.documents[0].$id
+    );
+  } catch (err) {
+    console.log(err);
+  }
+  return { success: true, message: "Removed from watchlist" };
+}
+
+
+export const setStatus = async ({user, id}:{user:string, id:string}) => {
+ try{
+   const inList = await database.listDocuments(
+      DATABASE_ID,
+      APPWRITE_WATCHLIST_ID,
+      [Query.equal("user", user), Query.equal("movie_id", id)]
+   )
+    if (inList.total > 0) {
+      return true;
+    } else {
+      return false;
+    }
+ } 
+ catch (err) {
+    console.log(err);
+    return false;
+ }
 }

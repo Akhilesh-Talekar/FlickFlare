@@ -139,8 +139,9 @@ const AuthForm = ({ type }: { type: "signin" | "signup" }) => {
           <TextInput
             className="border border-gray-300 rounded-lg p-2 mb-2 text-white"
             onChangeText={(text) => setValue("password", text)}
-            placeholder="Topsecret**"
+            placeholder="*Topsecret*"
             placeholderTextColor={"#A0A0A0"}
+            secureTextEntry={true} 
           />
           {errors.password && (
             <Text className="text-red-500">{errors.password.message}</Text>
