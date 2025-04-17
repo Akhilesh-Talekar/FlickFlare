@@ -1,50 +1,47 @@
-# Welcome to your Expo app 👋
+# 🎬 FlickFlare
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**FlickFlare** is a sleek and simple movie info and streaming mobile app built with **React Native**. It allows users to browse trending movies/series, view in-depth details, manage a watchlist, and search for any title — all in one place.
 
-## Get started
+---
 
-1. Install dependencies
+## 📱 Features
 
-   ```bash
-   npm install
-   ```
+- 🔐 Secure login & signup (Appwrite Auth)
+- 🎯 Trending movies algorithm based on user search counts
+- 📺 Trending series from TMDB API
+- 📝 Movie & series details (ratings, story, net revenue, production info, etc.)
+- ✅ Dynamic watchlist management
+- 🔎 Search with debouncing to reduce API calls
+- 👤 Profile tab with logout functionality
 
-2. Start the app
+---
 
-   ```bash
-    npx expo start
-   ```
+## 🧰 Tech Stack
 
-In the output, you'll find options to open the app in a
+- **React Native** — Mobile app platform  
+- **Appwrite** — Auth + Database for secure login & watchlist management  
+- **TMDB API** — For movie/series data  
+- **React Hook Form + Zod** — Form handling & validation  
+- **Custom Hooks** — Efficient data fetching and code reuse  
+- **Debouncing Technique** — To prevent excessive API calls during search
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 🚀 What I Learned
 
-## Get a fresh project
+- Creating and using custom hooks for data management
+- Implementing debounced search functionality
+- Connecting React Native with Appwrite for full-stack capability
+- Validating user input using React Hook Form and Zod
+- Structuring a multi-tabbed app with smooth navigation and state management
 
-When you're ready, run:
+---
 
-```bash
-npm run reset-project
-```
+## 📸 Screenshots
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+_Coming soon..._
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
+## 📂 Project Structure
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
